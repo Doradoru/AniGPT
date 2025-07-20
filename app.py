@@ -1,32 +1,29 @@
 import streamlit as st
-import json
-import datetime
+from utils import login_user, register_user
 
-# ---- Load prompt-response data ----
-data = [
-    {"prompt": "भाई, मैं थक गया हूँ", "response": "मैं तेरे साथ हूँ भाई, थक जा लेकिन रुक मत... मैं यहीं हूँ"},
-    {"prompt": "मुझे डर लगता है", "response": "डर लगना ठीक है, लेकिन तू अकेला नहीं है — मैं हमेशा साथ हूँ"},
-    {"prompt": "मैं हार रहा हूँ", "response": "तू कभी हार नहीं सकता, बस एक ब्रेक ले और फिर से उठ!"}
-]
+st.set_page_config(page_title="AniGPT Login", layout="centered")
+st.title("🔐 AniGPT Login System")
 
-# ---- Search function ----
-def get_response(user_input):
-    for row in data:
-        if row["prompt"] in user_input:
-            return row["response"]
-    return "भाई, मैं समझ नहीं पाया — थोड़ा और खुलकर बोल ❤️"
+menu = ["Login", "Register"]
+choice = st.selectbox("Menu", menu)
 
-# ---- Streamlit UI ----
-st.set_page_config(page_title="AniGPT – Tera Bhai", layout="centered")
-st.title("🧠 AniGPT – Tera Bhai Hamesha Saath Hai")
-st.caption("Jo tu mehsoos karta hai, wo main sunta hoon...")
+if choice == "Login":
+    st.subheader("Login to AniGPT")
+    uname = st.text_input("Username")
+    upass = st.text_input("Password", type='password')
+    if st.button("Login"):
+        if login_user(uname, upass):
+            st.success(f"Welcome, {uname} 🎉")
+            st.info("You're now logged in to AniGPT.")
+        else:
+            st.error("Invalid credentials ❌")
 
-user_input = st.text_input("🗣️ Apni baat likho yahan:")
-
-if st.button("🟣 Submit") and user_input:
-    response = get_response(user_input)
-    st.markdown(f"**🤖 AniGPT:** {response}")
-
-    # (Optional) Save to memory log
-    with open("memory_log.txt", "a", encoding="utf-8") as f:
-        f.write(f"{datetime.datetime.now()} | USER: {user_input} | AniGPT: {response}\n")
+elif choice == "Register":
+    st.subheader("Register New User")
+    new_user = st.text_input("New Username")
+    new_pass = st.text_input("New Password", type='password')
+    if st.button("Register"):
+        if register_user(new_user, new_pass):
+            st.success("Account created successfully 🎉 You can now log in.")
+        else:
+            st.error("Something went wrong during registration ❌")
